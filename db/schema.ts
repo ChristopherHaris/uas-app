@@ -17,10 +17,6 @@ export const books = sqliteTable("books", {
   releaseDate: text("releaseDate").notNull(),
   bookUrl: text("bookUrl").notNull(),
   imageUrl: text("imageUrl").notNull(),
-  createdAt: text("createdAt")
-    .notNull()
-    .default(sql`CURRENT_TIMESTAMP`),
-  updatedAt: text("updatedAt")
-    .notNull()
-    .default(sql`CURRENT_TIMESTAMP`),
+  createdAt: text("createdAt").default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: text("updatedAt").default(sql`CURRENT_TIMESTAMP`),
 });

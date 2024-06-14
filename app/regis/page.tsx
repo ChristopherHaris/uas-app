@@ -22,6 +22,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import { toast } from "sonner";
 
 const formSchema = z.object({
   name: z.string().min(1, {
@@ -49,14 +50,14 @@ export default function Regis() {
         .post("/api/regis", values)
         .then((response) => {
           console.log(response);
-          // toast.success("Register Successful, Please Login");
+          toast.success("Register Successful, Please Login");
           form.reset();
           setIsLoading(false);
           router.push("/login");
         })
         .catch((error) => {
           console.log(error);
-          // toast.error("Please Try Again");
+          toast.error("Please Try Again");
           setIsLoading(false);
         });
     } catch (error) {

@@ -22,6 +22,7 @@ import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import NextLink from "next/link";
+import { toast } from "sonner";
 
 const formSchema = z.object({
   name: z.string().min(1, {
@@ -42,21 +43,21 @@ export default function Login() {
     defaultValues: { name: "", password: "" },
   });
 
-  const onSubmit = async (values: any) => {
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       setIsLoading(true);
       await axios
         .post("/api/login", values)
         .then((response) => {
           console.log(response);
-          // toast.success("Register Successful, Please Login");
+          toast.success("Register Successful, Please Login");
           form.reset();
           setIsLoading(false);
           router.push("/");
         })
         .catch((error) => {
           console.log(error);
-          // toast.error("Please Try Again");
+          toast.error("Please Try Again");
           setIsLoading(false);
         });
     } catch (error) {
