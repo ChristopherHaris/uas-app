@@ -66,8 +66,8 @@ export default function HomePage() {
     window.open(bookUrl, "_blank");
   };
 
-  const onEdit = (bookUrl: string) => {
-    window.open(bookUrl, "_blank");
+  const onEdit = (book: Book) => {
+    router.push(`/edit?id=${book.id}`);
   };
 
   const onDelete = async (id: string) => {
@@ -142,7 +142,12 @@ export default function HomePage() {
                           >
                             View
                           </MenuItem>
-                          <MenuItem icon={<EditIcon />}>Edit</MenuItem>
+                          <MenuItem
+                            onClick={() => onEdit(book)}
+                            icon={<EditIcon />}
+                          >
+                            Edit
+                          </MenuItem>
                           <MenuItem
                             onClick={() => onDelete(book.id as string)}
                             icon={<DeleteIcon />}
