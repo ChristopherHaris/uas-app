@@ -19,6 +19,7 @@ import {
 import { FileUpload } from "@/components/file-upload";
 import axios from "axios";
 import { toast } from "sonner";
+import useAuth from "../hooks/useAuth";
 
 const formSchema = z.object({
   name: z.string().min(1, {
@@ -58,7 +59,6 @@ export default function Add() {
       await axios
         .post("/api/add", values)
         .then((response) => {
-          console.log(response);
           toast.success("Register Successful, Please Login");
           form.reset();
           setIsLoading(false);
@@ -78,6 +78,7 @@ export default function Add() {
     router.push("/");
   };
 
+  useAuth();
   return (
     <Flex
       minH={"100vh"}
@@ -145,7 +146,7 @@ export default function Add() {
                 {...form.register("releaseDate")}
               />
             </FormControl>
-            <Flex h={"10vh"}/>
+            <Flex h={"10vh"} />
             <Stack spacing={6} direction={["column", "row"]}>
               <Button
                 bg={"red.400"}

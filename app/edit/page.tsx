@@ -19,6 +19,7 @@ import {
 import { FileUpload } from "@/components/file-upload";
 import axios from "axios";
 import { toast } from "sonner";
+import useAuth from "../hooks/useAuth";
 
 const formSchema = z.object({
   id: z.string(),
@@ -93,6 +94,7 @@ export default function Edit() {
     router.push("/");
   };
 
+  useAuth();
   return (
     <Flex
       minH={"100vh"}

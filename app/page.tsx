@@ -28,6 +28,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import axios from "axios";
 import { toast } from "sonner";
+import useAuth from "@/app/hooks/useAuth";
 
 interface Book {
   bookUrl: string;
@@ -85,6 +86,7 @@ export default function HomePage() {
     toast.success("successfully deleted books");
   };
 
+  useAuth();
   return (
     <div>
       <div className="flex justify-end gap-2 pt-10 px-8 lg:px-24 w-full">

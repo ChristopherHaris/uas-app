@@ -46,22 +46,24 @@ export default function Login() {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       setIsLoading(true);
-      await axios
-        .post("/api/login", values)
-        .then((response) => {
-          console.log(response);
-          toast.success("Register Successful, Please Login");
-          form.reset();
-          setIsLoading(false);
-          router.push("/");
-        })
-        .catch((error) => {
-          console.log(error);
-          toast.error("Please Try Again");
-          setIsLoading(false);
-        });
+      const response = await axios.post("/api/login", values);
+
+      if (response?.data && response.data.token) {
+        localStorage.setItem("token", response.data.token);
+      }
+
+      if (response.status === 200) {
+        toast.success("Login Successful");
+        form.reset();
+        router.push("/");
+      } else {
+        toast.error("Please Try Again");
+      }
     } catch (error) {
       console.log(error);
+      toast.error("Please Try Again");
+    } finally {
+      setIsLoading(false);
     }
   };
 

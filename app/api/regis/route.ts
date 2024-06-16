@@ -1,6 +1,7 @@
 import { db } from "@/db";
 import { NextResponse } from "next/server";
 import { users } from "@/db/schema";
+import bcrypt from "bcrypt";
 import * as z from "zod";
 
 const formSchema = z.object({
@@ -17,7 +18,10 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { name, password } = formSchema.parse(body);
 
-    const user = await db.insert(users).values({ name, password });
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = await db
+      .insert(users)
+      .values({ name, password: hashedPassword });
 
     if (!user) {
       return new NextResponse("Invalid credentials", { status: 401 });
@@ -25,7 +29,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json(user);
   } catch (error) {
-    console.log("USER_POST", error);
+    console.log("USER_REGIS", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }
