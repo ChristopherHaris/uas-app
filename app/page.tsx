@@ -15,6 +15,7 @@ import {
   MenuItem,
   MenuList,
   IconButton,
+  Spinner
 } from "@chakra-ui/react";
 import {
   ArrowForwardIcon,
@@ -22,6 +23,7 @@ import {
   EditIcon,
   DeleteIcon,
   ViewIcon,
+  DownloadIcon, 
 } from "@chakra-ui/icons";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -29,6 +31,8 @@ import Image from "next/image";
 import axios from "axios";
 import { toast } from "sonner";
 import useAuth from "@/app/hooks/useAuth";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
 interface Book {
   bookUrl: string;
@@ -86,6 +90,23 @@ export default function HomePage() {
     toast.success("successfully deleted books");
   };
 
+  const printPDF = () => {
+    const input = document.getElementById("table-to-print");
+    if (input) {
+      html2canvas(input).then((canvas) => {
+        const imgData = canvas.toDataURL("image/png");
+        const pdf = new jsPDF();
+        const imgProps = pdf.getImageProperties(imgData);
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+        pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+        const pdfBlob = pdf.output("blob");
+        const blobUrl = URL.createObjectURL(pdfBlob);
+        window.open(blobUrl, "_blank");
+      });
+    }
+  };
+
   useAuth();
   return (
     <div>
@@ -97,12 +118,28 @@ export default function HomePage() {
         >
           Add Books
         </Button>
+        <Button
+          onClick={printPDF}
+          rightIcon={<DownloadIcon />}
+          colorScheme="blue"
+        >
+          Download PDF
+        </Button>
       </div>
       <div className="container justify-center mx-auto py-10">
         {isLoading ? (
-          <div className="flex w-full justify-center">Loading...</div>
+          <div className="flex w-full justify-center">
+            <Spinner
+              thickness="4px"
+              speed="0.65s"
+              emptyColor="gray.200"
+              color="blue.500"
+              size="xl"
+            />
+          </div>
         ) : (
-          <TableContainer>
+          // <MyDocument>
+          <TableContainer id="table-to-print">
             <Table size="sm">
               <Thead>
                 <Tr>
@@ -165,6 +202,7 @@ export default function HomePage() {
               <Tfoot></Tfoot>
             </Table>
           </TableContainer>
+          // </MyDocument>
         )}
       </div>
     </div>
