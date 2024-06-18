@@ -15,7 +15,10 @@ import {
   MenuItem,
   MenuList,
   IconButton,
-  Spinner
+  Spinner,
+  Box,
+  useColorMode,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import {
   ArrowForwardIcon,
@@ -23,7 +26,9 @@ import {
   EditIcon,
   DeleteIcon,
   ViewIcon,
-  DownloadIcon, 
+  UnlockIcon,
+  SunIcon,
+  MoonIcon,
 } from "@chakra-ui/icons";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -47,6 +52,9 @@ export default function HomePage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<Book[]>([]);
+  const { colorMode, toggleColorMode } = useColorMode();
+  const buttonColor = useColorModeValue("black", "white");
+  
 
   const onClick = () => {
     router.push("/add");
@@ -91,54 +99,84 @@ export default function HomePage() {
   };
 
   const printPDF = () => {
-    const input = document.getElementById("table-to-print");
-    if (input) {
-      html2canvas(input).then((canvas) => {
+    const pdf = new jsPDF();
+    let yOffset = 10;
+    let pageHeight = pdf.internal.pageSize.height;
+  
+    const addBookToPDF = async (book: Book, index: number) => {
+      try {
+        const canvas = await html2canvas(document.querySelector(`#image-${book.id}`)!, { scale: 10 }); // Adjust scale as needed
         const imgData = canvas.toDataURL("image/png");
-        const pdf = new jsPDF();
-        const imgProps = pdf.getImageProperties(imgData);
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-        pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-        const pdfBlob = pdf.output("blob");
-        const blobUrl = URL.createObjectURL(pdfBlob);
-        window.open(blobUrl, "_blank");
-      });
-    }
+        pdf.addImage(imgData, "PNG", 10, yOffset, 60, 60, "", "FAST");
+        yOffset += 80;
+  
+        pdf.text(`ID: ${book.id}`, 10, yOffset);
+        yOffset += 10;
+  
+        pdf.text(`Name: ${book.name}`, 10, yOffset);
+        yOffset += 10;
+  
+        pdf.text(`Author: ${book.author}`, 10, yOffset);
+        yOffset += 10;
+  
+        pdf.text(`Release Date: ${book.releaseDate}`, 10, yOffset);
+        yOffset += 10;
+  
+        pdf.line(10, yOffset, 200, yOffset);
+        yOffset += 20;
+  
+        // Check if adding another book will exceed page height
+        if (yOffset > pageHeight - 20) { // Leave some margin for footer
+          pdf.addPage();
+          yOffset = 10;
+        }
+  
+        if (index === data.length - 1) {
+          const pdfBlob = pdf.output("blob");
+          const blobUrl = URL.createObjectURL(pdfBlob);
+          window.open(blobUrl, "_blank");
+        }
+      } catch (error) {
+        console.error("Error adding book to PDF:", error);
+      }
+    };
+  
+    data.forEach((book, index) => {
+      addBookToPDF(book, index);
+    });
+  };
+  
+  const logout = () => {
+    localStorage.removeItem("authToken");
+    router.push("/login");
+    toast.success("Successfully logged out");
   };
 
   useAuth();
   return (
     <div>
       <div className="flex justify-end gap-2 pt-10 px-8 lg:px-24 w-full">
-        <Button
-          onClick={onClick}
-          rightIcon={<ArrowForwardIcon />}
-          colorScheme="teal"
-        >
+        <Button onClick={onClick} rightIcon={<ArrowForwardIcon />} colorScheme="teal">
           Add Books
         </Button>
+        <Button onClick={printPDF} rightIcon={<ViewIcon />} colorScheme="blue">
+          Show PDF
+        </Button>
         <Button
-          onClick={printPDF}
-          rightIcon={<DownloadIcon />}
-          colorScheme="blue"
+          onClick={toggleColorMode}
+          rightIcon={colorMode === "light" ? <MoonIcon /> : <SunIcon />}
+          bg={buttonColor}
+          color={colorMode === "light" ? "white" : "black"}
         >
-          Download PDF
+          {colorMode === "light" ? "Dark" : "Light"} Mode
         </Button>
       </div>
       <div className="container justify-center mx-auto py-10">
         {isLoading ? (
           <div className="flex w-full justify-center">
-            <Spinner
-              thickness="4px"
-              speed="0.65s"
-              emptyColor="gray.200"
-              color="blue.500"
-              size="xl"
-            />
+            <Spinner thickness="4px" speed="0.65s" emptyColor="gray.200" color="blue.500" size="xl" />
           </div>
         ) : (
-          // <MyDocument>
           <TableContainer id="table-to-print">
             <Table size="sm">
               <Thead>
@@ -156,41 +194,22 @@ export default function HomePage() {
                   <Tr key={book.id}>
                     <Td>{book.id}</Td>
                     <Td>
-                      <Image
-                        src={book.imageUrl}
-                        height="50"
-                        width="50"
-                        alt={book.name}
-                      />
+                      <Image id={`image-${book.id}`} src={book.imageUrl} height="50" width="50" alt={book.name} />
                     </Td>
                     <Td>{book.name}</Td>
                     <Td>{book.author}</Td>
                     <Td isNumeric>{book.releaseDate}</Td>
                     <Td>
                       <Menu>
-                        <MenuButton
-                          as={IconButton}
-                          aria-label="Options"
-                          icon={<HamburgerIcon />}
-                          variant="outline"
-                        />
+                        <MenuButton as={IconButton} aria-label="Options" icon={<HamburgerIcon />} variant="outline" />
                         <MenuList>
-                          <MenuItem
-                            onClick={() => onView(book.bookUrl as string)}
-                            icon={<ViewIcon />}
-                          >
+                          <MenuItem onClick={() => onView(book.bookUrl as string)} icon={<ViewIcon />}>
                             View
                           </MenuItem>
-                          <MenuItem
-                            onClick={() => onEdit(book)}
-                            icon={<EditIcon />}
-                          >
+                          <MenuItem onClick={() => onEdit(book)} icon={<EditIcon />}>
                             Edit
                           </MenuItem>
-                          <MenuItem
-                            onClick={() => onDelete(book.id as string)}
-                            icon={<DeleteIcon />}
-                          >
+                          <MenuItem onClick={() => onDelete(book.id as string)} icon={<DeleteIcon />}>
                             Delete
                           </MenuItem>
                         </MenuList>
@@ -202,9 +221,13 @@ export default function HomePage() {
               <Tfoot></Tfoot>
             </Table>
           </TableContainer>
-          // </MyDocument>
         )}
       </div>
+      <Box className="fixed bottom-0 right-0 flex justify-end pb-10 pr-10">
+        <Button onClick={logout} rightIcon={<UnlockIcon />} colorScheme="red">
+          Logout
+        </Button>
+      </Box>
     </div>
   );
 }

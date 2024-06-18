@@ -30,6 +30,8 @@
     "jspdf": "^2.5.1",
     "lucide-react": "^0.394.0",
     "next": "14.2.3",
+    "pdfmake": "^0.2.10",
+    "pdfmake-unicode": "^0.0.1",
     "react": "^18",
     "react-dom": "^18",
     "react-hook-form": "^7.51.5",
@@ -41,6 +43,7 @@
   "devDependencies": {
     "@types/jsonwebtoken": "^9.0.6",
     "@types/node": "^20",
+    "@types/pdfmake": "^0.2.9",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "drizzle-kit": "^0.22.6",
