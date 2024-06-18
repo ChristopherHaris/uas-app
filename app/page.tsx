@@ -105,7 +105,7 @@ export default function HomePage() {
   
     const addBookToPDF = async (book: Book, index: number) => {
       try {
-        const canvas = await html2canvas(document.querySelector(`#image-${book.id}`)!, { scale: 10 }); // Adjust scale as needed
+        const canvas = await html2canvas(document.querySelector(`#image-${book.id}`)!, { scale: 10 });
         const imgData = canvas.toDataURL("image/png");
         pdf.addImage(imgData, "PNG", 10, yOffset, 60, 60, "", "FAST");
         yOffset += 80;
@@ -125,8 +125,7 @@ export default function HomePage() {
         pdf.line(10, yOffset, 200, yOffset);
         yOffset += 20;
   
-        // Check if adding another book will exceed page height
-        if (yOffset > pageHeight - 20) { // Leave some margin for footer
+        if (yOffset > pageHeight - 20) {
           pdf.addPage();
           yOffset = 10;
         }
@@ -147,7 +146,7 @@ export default function HomePage() {
   };
   
   const logout = () => {
-    localStorage.removeItem("authToken");
+    localStorage.removeItem("token");
     router.push("/login");
     toast.success("Successfully logged out");
   };
