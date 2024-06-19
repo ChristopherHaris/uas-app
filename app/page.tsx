@@ -100,8 +100,9 @@ export default function HomePage() {
 
         pdf.line(10, yOffset, 200, yOffset);
         yOffset += 20;
-
-        if (yOffset > pageHeight - 20) {
+  
+        // Check if adding another book will exceed page height
+        if (yOffset > pageHeight - 20) { // Leave some margin for footer
           pdf.addPage();
           yOffset = 20;
         }
@@ -122,7 +123,7 @@ export default function HomePage() {
   };
 
   const logout = () => {
-    localStorage.removeItem("Token");
+    localStorage.removeItem("authToken");
     router.push("/login");
     toast.success("Successfully logged out");
   };
