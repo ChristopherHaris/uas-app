@@ -13,8 +13,11 @@ import {
   Button,
   Heading,
   Text,
+  useColorMode,
+  IconButton,
+  Image,
 } from "@chakra-ui/react";
-import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
+import { ViewIcon, ViewOffIcon, SunIcon, MoonIcon } from "@chakra-ui/icons";
 import * as z from "zod";
 import axios from "axios";
 import { FormProvider, useForm } from "react-hook-form";
@@ -37,7 +40,7 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-
+  const { colorMode, toggleColorMode } = useColorMode();
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: { name: "", password: "" },
@@ -68,9 +71,17 @@ export default function Login() {
   };
 
   return (
-    <Flex minH={"100vh"} align={"center"} justify={"center"}>
-      <Stack spacing={8} mx={"auto"} maxW={"lg"} py={12} px={6}>
+    <Flex minH={"100vh"} align={"center"} justify={"center"} position="relative">
+      <Box position="absolute" top="4" right="4">
+        <IconButton
+          aria-label="Toggle theme"
+          icon={colorMode === "light" ? <MoonIcon /> : <SunIcon />}
+          onClick={toggleColorMode}
+        />
+      </Box>
+      <Stack spacing={8} mx={"auto"} maxW={"lg"} py={12} px={8}>
         <Stack align={"center"}>
+          <Image src="https://pacificgarden.co.id/wp-content/uploads/2021/10/Logo-UBM-Universitas-Bunda-Mulia-Original.png" alt="Logo" boxSize="150px" objectFit="contain" />
           <Heading fontSize={"4xl"}>Sign in to your account</Heading>
         </Stack>
         <Box rounded={"lg"} boxShadow={"lg"} p={8}>
