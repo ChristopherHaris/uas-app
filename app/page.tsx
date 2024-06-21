@@ -1,7 +1,39 @@
 "use client";
 
-import {Table, TableContainer, Tbody, Td, Tfoot, Th, Thead, Tr, Button, Menu, MenuButton, MenuItem, MenuList, IconButton, Spinner, Box, Input, InputGroup, InputLeftElement, useColorMode, useColorModeValue,} from "@chakra-ui/react";
-import {ArrowForwardIcon, HamburgerIcon, EditIcon, DeleteIcon, ViewIcon, UnlockIcon, SunIcon, MoonIcon, SearchIcon,} from "@chakra-ui/icons";
+import {
+  Table,
+  TableContainer,
+  Tbody,
+  Td,
+  Tfoot,
+  Th,
+  Thead,
+  Tr,
+  Button,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+  IconButton,
+  Spinner,
+  Box,
+  Input,
+  InputGroup,
+  InputLeftElement,
+  useColorMode,
+  useColorModeValue,
+} from "@chakra-ui/react";
+import {
+  ArrowForwardIcon,
+  HamburgerIcon,
+  EditIcon,
+  DeleteIcon,
+  ViewIcon,
+  UnlockIcon,
+  SunIcon,
+  MoonIcon,
+  SearchIcon,
+} from "@chakra-ui/icons";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Image from "next/image";
@@ -81,7 +113,10 @@ export default function HomePage() {
 
     const addBookToPDF = async (book: Book, index: number) => {
       try {
-        const canvas = await html2canvas(document.querySelector(`#image-${book.id}`)!, { scale: 10 });
+        const canvas = await html2canvas(
+          document.querySelector(`#image-${book.id}`)!,
+          { scale: 10 }
+        );
         const imgData = canvas.toDataURL("image/png");
         pdf.addImage(imgData, "PNG", 10, yOffset, 60, 60, "", "FAST");
         yOffset += 80;
@@ -100,7 +135,7 @@ export default function HomePage() {
 
         pdf.line(10, yOffset, 200, yOffset);
         yOffset += 20;
-  
+
         if (yOffset > pageHeight - 20) {
           pdf.addPage();
           yOffset = 20;
@@ -122,8 +157,9 @@ export default function HomePage() {
   };
 
   const logout = () => {
-    localStorage.removeItem("authToken");
-    router.push("/login");
+    localStorage.removeItem("token");
+    router.refresh();
+    window.location.reload();
     toast.success("Successfully logged out");
   };
 
@@ -139,16 +175,21 @@ export default function HomePage() {
     setData(sortedData);
   };
 
-  const filteredData = data.filter((book) =>
-    book.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    book.id.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredData = data.filter(
+    (book) =>
+      book.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      book.id.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   useAuth();
   return (
     <div>
       <div className="flex justify-end gap-2 pt-10 px-8 lg:px-24 w-full">
-        <Button onClick={onClick} rightIcon={<ArrowForwardIcon />} colorScheme="teal">
+        <Button
+          onClick={onClick}
+          rightIcon={<ArrowForwardIcon />}
+          colorScheme="teal"
+        >
           Add Books
         </Button>
         <Button onClick={printPDF} rightIcon={<ViewIcon />} colorScheme="blue">
@@ -177,7 +218,13 @@ export default function HomePage() {
         </InputGroup>
         {isLoading ? (
           <div className="flex w-full justify-center">
-            <Spinner thickness="4px" speed="0.65s" emptyColor="gray.200" color="blue.500" size="xl" />
+            <Spinner
+              thickness="4px"
+              speed="0.65s"
+              emptyColor="gray.200"
+              color="blue.500"
+              size="xl"
+            />
           </div>
         ) : (
           <TableContainer id="table-to-print">
@@ -185,17 +232,41 @@ export default function HomePage() {
               <Thead>
                 <Tr>
                   <Th onClick={() => sortData("id")} cursor="pointer">
-                    ID {sortColumn === "id" ? (sortOrder === "asc" ? "↑" : "↓") : ""}
+                    ID{" "}
+                    {sortColumn === "id"
+                      ? sortOrder === "asc"
+                        ? "↑"
+                        : "↓"
+                      : ""}
                   </Th>
                   <Th>Image</Th>
                   <Th onClick={() => sortData("name")} cursor="pointer">
-                    Name {sortColumn === "name" ? (sortOrder === "asc" ? "↑" : "↓") : ""}
+                    Name{" "}
+                    {sortColumn === "name"
+                      ? sortOrder === "asc"
+                        ? "↑"
+                        : "↓"
+                      : ""}
                   </Th>
                   <Th onClick={() => sortData("author")} cursor="pointer">
-                    Author {sortColumn === "author" ? (sortOrder === "asc" ? "↑" : "↓") : ""}
+                    Author{" "}
+                    {sortColumn === "author"
+                      ? sortOrder === "asc"
+                        ? "↑"
+                        : "↓"
+                      : ""}
                   </Th>
-                  <Th isNumeric onClick={() => sortData("releaseDate")} cursor="pointer">
-                    Release Date {sortColumn === "releaseDate" ? (sortOrder === "asc" ? "↑" : "↓") : ""}
+                  <Th
+                    isNumeric
+                    onClick={() => sortData("releaseDate")}
+                    cursor="pointer"
+                  >
+                    Release Date{" "}
+                    {sortColumn === "releaseDate"
+                      ? sortOrder === "asc"
+                        ? "↑"
+                        : "↓"
+                      : ""}
                   </Th>
                   <Th></Th>
                 </Tr>
@@ -205,22 +276,42 @@ export default function HomePage() {
                   <Tr key={book.id}>
                     <Td>{book.id}</Td>
                     <Td>
-                      <Image id={`image-${book.id}`} src={book.imageUrl} height="50" width="50" alt={book.name} />
+                      <Image
+                        id={`image-${book.id}`}
+                        src={book.imageUrl}
+                        height="50"
+                        width="50"
+                        alt={book.name}
+                      />
                     </Td>
                     <Td>{book.name}</Td>
                     <Td>{book.author}</Td>
                     <Td isNumeric>{book.releaseDate}</Td>
                     <Td>
                       <Menu>
-                        <MenuButton as={IconButton} aria-label="Options" icon={<HamburgerIcon />} variant="outline" />
+                        <MenuButton
+                          as={IconButton}
+                          aria-label="Options"
+                          icon={<HamburgerIcon />}
+                          variant="outline"
+                        />
                         <MenuList>
-                          <MenuItem onClick={() => onView(book.bookUrl)} icon={<ViewIcon />}>
+                          <MenuItem
+                            onClick={() => onView(book.bookUrl)}
+                            icon={<ViewIcon />}
+                          >
                             View
                           </MenuItem>
-                          <MenuItem onClick={() => onEdit(book)} icon={<EditIcon />}>
+                          <MenuItem
+                            onClick={() => onEdit(book)}
+                            icon={<EditIcon />}
+                          >
                             Edit
                           </MenuItem>
-                          <MenuItem onClick={() => onDelete(book.id)} icon={<DeleteIcon />}>
+                          <MenuItem
+                            onClick={() => onDelete(book.id)}
+                            icon={<DeleteIcon />}
+                          >
                             Delete
                           </MenuItem>
                         </MenuList>
