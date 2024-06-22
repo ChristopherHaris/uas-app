@@ -96,16 +96,24 @@ export default function Edit() {
   };
 
   useAuth();
+
   return (
     <Suspense
       fallback={
-        <Spinner
-          thickness="4px"
-          speed="0.65s"
-          emptyColor="gray.200"
-          color="blue.500"
-          size="xl"
-        />
+        <Flex
+          minH={"100vh"}
+          align={"center"}
+          justify={"center"}
+          bg={useColorModeValue("gray.50", "gray.800")}
+        >
+          <Spinner
+            thickness="4px"
+            speed="0.65s"
+            emptyColor="gray.200"
+            color="blue.500"
+            size="xl"
+          />
+        </Flex>
       }
     >
       <Flex
