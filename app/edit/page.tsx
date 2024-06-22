@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import * as z from "zod";
 import {
@@ -15,6 +15,7 @@ import {
   Stack,
   useColorModeValue,
   Center,
+  Spinner,
 } from "@chakra-ui/react";
 import { FileUpload } from "@/components/file-upload";
 import axios from "axios";
@@ -96,100 +97,112 @@ export default function Edit() {
 
   useAuth();
   return (
-    <Flex
-      minH={"100vh"}
-      align={"center"}
-      justify={"center"}
-      bg={useColorModeValue("gray.50", "gray.800")}
+    <Suspense
+      fallback={
+        <Spinner
+          thickness="4px"
+          speed="0.65s"
+          emptyColor="gray.200"
+          color="blue.500"
+          size="xl"
+        />
+      }
     >
-      <Stack
-        spacing={4}
-        w={"full"}
-        maxW={"md"}
-        bg={useColorModeValue("white", "gray.700")}
-        rounded={"xl"}
-        boxShadow={"lg"}
-        p={6}
-        my={12}
+      <Flex
+        minH={"100vh"}
+        align={"center"}
+        justify={"center"}
+        bg={useColorModeValue("gray.50", "gray.800")}
       >
-        <Heading lineHeight={1.1} fontSize={{ base: "2xl", sm: "3xl" }}>
-          Edit Book
-        </Heading>
-        <FormProvider {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
-            <FormControl id="imageUrl" isRequired>
-              <FormLabel>Upload an Image</FormLabel>
-              <Center>
-                <FileUpload
-                  endpoint="bookImage"
-                  value={form.watch("imageUrl")}
-                  onChange={(url) => form.setValue("imageUrl", url || "")}
+        <Stack
+          spacing={4}
+          w={"full"}
+          maxW={"md"}
+          bg={useColorModeValue("white", "gray.700")}
+          rounded={"xl"}
+          boxShadow={"lg"}
+          p={6}
+          my={12}
+        >
+          <Heading lineHeight={1.1} fontSize={{ base: "2xl", sm: "3xl" }}>
+            Edit Book
+          </Heading>
+          <FormProvider {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
+              <FormControl id="imageUrl" isRequired>
+                <FormLabel>Upload an Image</FormLabel>
+                <Center>
+                  <FileUpload
+                    endpoint="bookImage"
+                    value={form.watch("imageUrl")}
+                    onChange={(url) => form.setValue("imageUrl", url || "")}
+                  />
+                </Center>
+              </FormControl>
+              <FormControl id="bookUrl" isRequired>
+                <FormLabel>Upload a Book</FormLabel>
+                <Center>
+                  <FileUpload
+                    endpoint="bookUrl"
+                    value={form.watch("bookUrl")}
+                    onChange={(url) => form.setValue("bookUrl", url || "")}
+                  />
+                </Center>
+              </FormControl>
+              <FormControl id="name" isRequired>
+                <FormLabel>Book Name</FormLabel>
+                <Input
+                  placeholder="Book Name"
+                  _placeholder={{ color: "gray.500" }}
+                  {...form.register("name")}
                 />
-              </Center>
-            </FormControl>
-            <FormControl id="bookUrl" isRequired>
-              <FormLabel>Upload a Book</FormLabel>
-              <Center>
-                <FileUpload
-                  endpoint="bookUrl"
-                  value={form.watch("bookUrl")}
-                  onChange={(url) => form.setValue("bookUrl", url || "")}
+              </FormControl>
+              <FormControl id="author" isRequired>
+                <FormLabel>Author</FormLabel>
+                <Input
+                  placeholder="Author"
+                  _placeholder={{ color: "gray.500" }}
+                  {...form.register("author")}
                 />
-              </Center>
-            </FormControl>
-            <FormControl id="name" isRequired>
-              <FormLabel>Book Name</FormLabel>
-              <Input
-                placeholder="Book Name"
-                _placeholder={{ color: "gray.500" }}
-                {...form.register("name")}
-              />
-            </FormControl>
-            <FormControl id="author" isRequired>
-              <FormLabel>Author</FormLabel>
-              <Input
-                placeholder="Author"
-                _placeholder={{ color: "gray.500" }}
-                {...form.register("author")}
-              />
-            </FormControl>
-            <FormControl id="releaseDate" isRequired>
-              <FormLabel>Release Date</FormLabel>
-              <Input
-                type="date"
-                placeholder="Release Date"
-                _placeholder={{ color: "gray.500" }}
-                {...form.register("releaseDate")}
-              />
-            </FormControl>
-            <Flex h={"10vh"} />
-            <Stack spacing={6} direction={["column", "row"]}>
-              <Button
-                bg={"red.400"}
-                color={"white"}
-                w="full"
-                onClick={onCancel}
-                _hover={{
-                  bg: "red.500",
-                }}
-              >
-                Cancel
-              </Button>
-              <Button
-                bg={"blue.400"}
-                color={"white"}
-                w="full"
-                type="submit"
-                _hover={{
-                  bg: "blue.500",
-                }}
-              >
-                Submit
-              </Button>
-            </Stack>
-          </form>
-        </FormProvider>
-      </Stack>
-    </Flex>
+              </FormControl>
+              <FormControl id="releaseDate" isRequired>
+                <FormLabel>Release Date</FormLabel>
+                <Input
+                  type="date"
+                  placeholder="Release Date"
+                  _placeholder={{ color: "gray.500" }}
+                  {...form.register("releaseDate")}
+                />
+              </FormControl>
+              <Flex h={"10vh"} />
+              <Stack spacing={6} direction={["column", "row"]}>
+                <Button
+                  bg={"red.400"}
+                  color={"white"}
+                  w="full"
+                  onClick={onCancel}
+                  _hover={{
+                    bg: "red.500",
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  bg={"blue.400"}
+                  color={"white"}
+                  w="full"
+                  type="submit"
+                  _hover={{
+                    bg: "blue.500",
+                  }}
+                >
+                  Submit
+                </Button>
+              </Stack>
+            </form>
+          </FormProvider>
+        </Stack>
+      </Flex>
+    </Suspense>
   );
 }
